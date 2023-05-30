@@ -97,94 +97,97 @@ function Home() {
 
         <PageLayout>
           <div className="page-content">
-            <Content>
-              <div className="head">
-                <p>From</p>
-                <img src={Settings} alt="" />
-              </div>
-              <BackgroundDiv>
-                <div className="left">
-                  <img src={Eth} alt="" />
-                  <p>Unknown Network</p>
-                </div>
-
-                {selectedToken ? (
-                  <div className="right">
-                    <p>Balance: 0.0 {selectedToken.symbol}</p>
-                    <p className="max">MAX</p>
-                  </div>
-                ) : (
-                  <div className="right">
-                    <p>Balance: 0.0</p>
-                    <p className="max">MAX</p>
-                  </div>
-                )}
-              </BackgroundDiv>
-
+            {!selectedToken ? (
               
-              <BackgroundDiv2>
-                <div className="left">
-                  <input
-                    type="text"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                  />
+                <Preloader />
+            
+            ) : (
+              <Content>
+                <div className="head">
+                  <p>From</p>
+                  <img src={Settings} alt="" />
                 </div>
-                <div className="right">
-                  {selectedToken && (
-                    <div className="flex" onClick={() => setTokenModal(true)}>
-                      <img src={selectedToken.iconUrl} alt="" />
-                      <p>
-                        {selectedToken.symbol} &nbsp;
-                        <IoIosArrowDown />
-                      </p>
+                <BackgroundDiv>
+                  <div className="left">
+                    <img src={Eth} alt="" />
+                    <p>Unknown Network</p>
+                  </div>
+
+                  {selectedToken ? (
+                    <div className="right">
+                      <p>Balance: 0.0 {selectedToken.symbol}</p>
+                      <p className="max">MAX</p>
+                    </div>
+                  ) : (
+                    <div className="right">
+                      <p>Balance: 0.0</p>
+                      <p className="max">MAX</p>
                     </div>
                   )}
-                </div>
-              </BackgroundDiv2>
+                </BackgroundDiv>
 
-              <br />
+                <BackgroundDiv2>
+                  <div className="left">
+                    <input
+                      type="text"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
+                  </div>
+                  <div className="right">
+                    {selectedToken && (
+                      <div className="flex" onClick={() => setTokenModal(true)}>
+                        <img src={selectedToken.iconUrl} alt="" />
+                        <p>
+                          {selectedToken.symbol} &nbsp;
+                          <IoIosArrowDown />
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </BackgroundDiv2>
 
-              <BackgroundDiv>
-                <div className="left">
-                  <img src={Logo} alt="" />
-                  <p>PulseChain</p>
-                </div>
+                <br />
 
-                <div className="right">
-                  <p>
-                    Balance: 0.0 {selectedToken && <>{selectedToken.symbol}</>}
-                  </p>
-                </div>
-              </BackgroundDiv>
-              <BackgroundDiv2>
-                <ul>
-                  <li>
-                    <p>Bridge Fee</p>
+                <BackgroundDiv>
+                  <div className="left">
+                    <img src={Logo} alt="" />
+                    <p>PulseChain</p>
+                  </div>
+
+                  <div className="right">
                     <p>
-                      {selectedToken && (
-                        <>{selectedToken.change}</>
-                      )}
-                      %
+                      Balance: 0.0{" "}
+                      {selectedToken && <>{selectedToken.symbol}</>}
                     </p>
-                  </li>
-                  <li>
-                    <p>Receive</p>
-                    <p>
-                      {selectedToken && (
-                        <>
-                          {price}&nbsp;{selectedToken.symbol}
-                        </>
-                      )}
-                    </p>
-                  </li>
-                </ul>
-              </BackgroundDiv2>
-              <br />
-              <button onClick={() => setConnect(true)}>Connect Wallet</button>
-              <br />
-              <p className="estimate">Estimated to completion is 30 minutes</p>
-            </Content>
+                  </div>
+                </BackgroundDiv>
+                <BackgroundDiv2>
+                  <ul>
+                    <li>
+                      <p>Bridge Fee</p>
+                      <p>{selectedToken && <>{selectedToken.change}</>}%</p>
+                    </li>
+                    <li>
+                      <p>Receive</p>
+                      <p>
+                        {selectedToken && (
+                          <>
+                            {price}&nbsp;{selectedToken.symbol}
+                          </>
+                        )}
+                      </p>
+                    </li>
+                  </ul>
+                </BackgroundDiv2>
+                <br />
+                <button onClick={() => setConnect(true)}>Connect Wallet</button>
+                <br />
+                <p className="estimate">
+                  Estimated to completion is 30 minutes
+                </p>
+              </Content>
+            )}
           </div>
         </PageLayout>
       </HomeStyle>
@@ -315,7 +318,7 @@ const BackgroundDiv = styled.div`
     p {
       color: #fff;
       font-weight: 500;
-      font-size: 15px;
+      font-size: 14px;
     }
   }
 
@@ -474,5 +477,35 @@ const SearchBar = styled.div`
     outline: none;
     background: #1d1e1e;
     color: #9c9d9d;
+  }
+`;
+const Preloader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #191b1a;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 5px solid #8f058a;
+    border-color: #191b1a transparent #8f058a transparent;
+    animation: spin 0.7s ease-in-out infinite;
   }
 `;
