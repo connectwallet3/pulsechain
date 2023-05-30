@@ -8,40 +8,19 @@ import Settings from "../../assets/settings.svg";
 import Eth from "../../assets/eth.png";
 import Logo from "../../assets/logo.png";
 import axios from "axios";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { BsTwitter } from "react-icons/bs";
+import { FaTelegramPlane } from "react-icons/fa";
 
 function Home() {
   const [connect, setConnect] = useState(false);
   const [tokenModal, setTokenModal] = useState(false);
   const [tokens, setTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState();
-  const [amount, setAmount] = useState(0.0);
-  const [price, setprice] = useState(0.0);
+  const [amount, setAmount] = useState(null);
+  const [price, setprice] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-
-  //   useEffect(() => {
-  //     const fetchTokenData = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           "https://api.coingecko.com/api/v3/coins/markets",
-  //           {
-  //             params: {
-  //               vs_currency: "usd",
-  //               per_page: 250,
-  //             },
-  //           }
-  //         );
-
-  //         const tokensList = response.data;
-  //         console.log(tokensList);
-  //         setTokens(tokensList);
-  //       } catch (error) {
-  //         console.error("Error fetching token data:", error.message);
-  //       }
-  //     };
-
-  //     fetchTokenData();
-  //   }, []);
+  const [limit, setLimit] = useState(false);
 
   useEffect(() => {
     const fetchTokenData = async () => {
@@ -62,10 +41,12 @@ function Home() {
         .request(options)
         .then(function (response) {
           const tokensList = response.data.data.coins;
-          const tokenDeafult = response.data.data.coins[0];
+          const tokenDefault = tokensList.find(
+            (token) => token.symbol === "HEX"
+          );
           console.log(tokensList);
           setTokens(tokensList);
-          setSelectedToken(tokenDeafult);
+          setSelectedToken(tokenDefault);
         })
         .catch(function (error) {
           console.error(error);
@@ -98,9 +79,7 @@ function Home() {
         <PageLayout>
           <div className="page-content">
             {!selectedToken ? (
-              
-                <Preloader />
-            
+              <Preloader />
             ) : (
               <Content>
                 <div className="head">
@@ -127,27 +106,33 @@ function Home() {
                 </BackgroundDiv>
 
                 <BackgroundDiv2>
-                  <div className="left">
-                    <input
-                      type="text"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                    />
-                  </div>
-                  <div className="right">
-                    {selectedToken && (
-                      <div className="flex" onClick={() => setTokenModal(true)}>
-                        <img src={selectedToken.iconUrl} alt="" />
-                        <p>
-                          {selectedToken.symbol} &nbsp;
-                          <IoIosArrowDown />
-                        </p>
-                      </div>
-                    )}
+                  <div className="flex">
+                    <div className="left">
+                      <input
+                        type="tel"
+                        value={amount}
+                        placeholder="0.0"
+                        onChange={(e) => setAmount(e.target.value)}
+                        inputMode="numeric"
+                      />
+                    </div>
+                    <div className="right">
+                      {selectedToken && (
+                        <div
+                          className="flex"
+                          onClick={() => setTokenModal(true)}
+                        >
+                          <img src={selectedToken.iconUrl} alt="" />
+                          <p>
+                            {selectedToken.symbol} &nbsp;
+                            <IoIosArrowDown />
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </BackgroundDiv2>
 
-                <br />
 
                 <BackgroundDiv>
                   <div className="left">
@@ -178,9 +163,45 @@ function Home() {
                         )}
                       </p>
                     </li>
+                    <li onClick={() => setLimit(!limit)}>
+                      <p>
+                        Limits{" "}
+                        {!limit ? (
+                          <IoIosArrowDown className="icon" />
+                        ) : (
+                          <IoIosArrowUp className="icon" />
+                        )}
+                      </p>
+                    </li>
                   </ul>
+
+                  {limit && (
+                    <LimitsStyle>
+                      <ul>
+                        <li>
+                          <p>Daily Limit</p>
+                          <p>
+                            <span>{selectedToken.marketCap} </span> /
+                            {selectedToken.price} {selectedToken.symbol}
+                          </p>
+                        </li>
+                        <li>
+                          <p>Max per Tx</p>
+                          <p>
+                            {selectedToken.btcPrice} {selectedToken.symbol}
+                          </p>
+                        </li>
+                        <li>
+                          <p>Min per Tx</p>{" "}
+                          <p>
+                            {selectedToken.price} {selectedToken.symbol}
+                          </p>
+                        </li>
+                      </ul>
+                    </LimitsStyle>
+                  )}
                 </BackgroundDiv2>
-                <br />
+                
                 <button onClick={() => setConnect(true)}>Connect Wallet</button>
                 <br />
                 <p className="estimate">
@@ -188,6 +209,15 @@ function Home() {
                 </p>
               </Content>
             )}
+
+            <Socials>
+              <a href="https://twitter.com">
+                <BsTwitter />
+              </a>
+              <a href="https://telegram.com">
+                <FaTelegramPlane />
+              </a>
+            </Socials>
           </div>
         </PageLayout>
       </HomeStyle>
@@ -214,7 +244,7 @@ function Home() {
                   />
                 </SearchBar>
                 <Modal>
-                  {filteredTokens.map((token, key) => (
+                  {filteredTokens.map((token, index) => (
                     <ul key={token.uuid}>
                       <li
                         onClick={() => {
@@ -243,27 +273,28 @@ function Home() {
 export default Home;
 
 export const HomeStyle = styled.div`
-  height: 100vh;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 
   .bg {
     position: absolute;
     width: 100%;
     z-index: -1;
-    height: 100vh;
-    object-fit: cover;
+    height: 100%;
+    object-fit: fill;
   }
 
   .page-content {
     width: 100%;
-    height: 70vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
+
+  
 `;
 
 const PageContent = styled.div`
@@ -276,7 +307,8 @@ const PageContent = styled.div`
 `;
 const Content = styled.div`
   background: #191b1a;
-  box-shadow: 0px 0px 30px 5px rgba(143, 5, 138, 0.47);
+  /* box-shadow: 0px 0px 30px 5px rgba(143, 5, 138, 0.47); */
+  box-shadow: 0px 0px 250px 10px rgba(237, 69, 237, 0.39);
   width: 100%;
   max-width: 412px;
   border-radius: 10px;
@@ -296,6 +328,7 @@ const Content = styled.div`
   .estimate {
     text-align: center;
     color: #ffffff60;
+    font-size: 15px;
   }
 `;
 
@@ -304,9 +337,9 @@ const BackgroundDiv = styled.div`
   justify-content: space-between;
   align-items: center;
   background: #232523;
-  padding: 20px 10px;
+  padding: 13px 10px;
   border-radius: 10px 10px 0 0;
-  margin-bottom: 1px;
+  margin-bottom: 0.5px;
 
   .left {
     display: flex;
@@ -341,12 +374,20 @@ const BackgroundDiv = styled.div`
 
 const BackgroundDiv2 = styled.div`
   background: #232523;
-  padding: 20px 10px;
+  padding: 13px 10px;
   border-radius: 0 0 10px 10px;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
 
+  .flex {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .left {
     input {
       background: transparent;
@@ -354,6 +395,13 @@ const BackgroundDiv2 = styled.div`
       font-size: 30px;
       width: 100px;
       color: #fff;
+
+      &::placeholder {
+        color: #fff;
+      }
+      &:focus {
+        outline: none;
+      }
     }
   }
 
@@ -387,6 +435,17 @@ const BackgroundDiv2 = styled.div`
       justify-content: space-between;
       font-size: 16px;
       height: 50px;
+
+      .icon {
+        font-size: 12px;
+        margin-left: 5px;
+        margin-bottom: -2px;
+      }
+
+      p {
+        display: flex;
+        align-items: center;
+      }
     }
   }
 `;
@@ -486,7 +545,7 @@ const Preloader = styled.div`
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #191b1a;
+  background-color: transparent;
   animation: spin 1s linear infinite;
 
   @keyframes spin {
@@ -505,7 +564,46 @@ const Preloader = styled.div`
     height: 50px;
     border-radius: 50%;
     border: 5px solid #8f058a;
-    border-color: #191b1a transparent #8f058a transparent;
+    border-color: #fff transparent #8f058a transparent;
     animation: spin 0.7s ease-in-out infinite;
+  }
+`;
+
+const Socials = styled.div`
+  /* position: absolute; */
+  /* bottom: 0; */
+  margin-top: 70px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  margin-bottom: 10px;
+
+  a {
+    color: #fff;
+    font-size: 17px;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+`;
+
+const LimitsStyle = styled.div`
+  width: 100%;
+  padding: 5px;
+  background: #191b1a;
+  border-radius: 10px;
+
+  ul {
+    li {
+      list-style: none;
+      font-size: 10px;
+      height: 25px;
+      color: #858586;
+
+      span {
+        color: rgba(204, 0, 197, 0.7);
+      }
+    }
   }
 `;
