@@ -58,7 +58,7 @@ function Home() {
   // }, []);
 
   useEffect(() => {
-    const tokenDefault = Data.find((token) => token.symbol === "WPLS");
+    const tokenDefault = Data.find((token) => token.symbol === "HEX");
     setSelectedToken(tokenDefault);
   }, []);
 
