@@ -11,49 +11,55 @@ import axios from "axios";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { BsTwitter } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
+import Data from "../../data/Data";
 
 function Home() {
   const [connect, setConnect] = useState(false);
   const [tokenModal, setTokenModal] = useState(false);
-  const [tokens, setTokens] = useState([]);
+  // const [tokens, setTokens] = useState([]);
   const [selectedToken, setSelectedToken] = useState();
   const [amount, setAmount] = useState(null);
   const [price, setprice] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [limit, setLimit] = useState(false);
 
+  // useEffect(() => {
+  //   const fetchTokenData = async () => {
+  //     const options = {
+  //       method: "GET",
+  //       url: "https://api.coinranking.com/v2/coins",
+  //       params: {
+  //         limit: 10,
+  //       },
+
+  //       headers: {
+  //         "x-access-token":
+  //           "coinranking0ba0a98b9fd652a9629cbe19f53764b58ec4739a579a764a",
+  //       },
+  //     };
+
+  //     axios
+  //       .request(options)
+  //       .then(function (response) {
+  //         const tokensList = response.data.data.coins;
+  //         const tokenDefault = tokensList.find(
+  //           (token) => token.symbol === "HEX"
+  //         );
+  //         console.log(tokensList);
+  //         setTokens(tokensList);
+  //         setSelectedToken(tokenDefault);
+  //       })
+  //       .catch(function (error) {
+  //         console.error(error);
+  //       });
+  //   };
+
+  //   fetchTokenData();
+  // }, []);
+
   useEffect(() => {
-    const fetchTokenData = async () => {
-      const options = {
-        method: "GET",
-        url: "https://api.coinranking.com/v2/coins",
-        params: {
-          limit: 10,
-        },
-
-        headers: {
-          "x-access-token":
-            "coinranking0ba0a98b9fd652a9629cbe19f53764b58ec4739a579a764a",
-        },
-      };
-
-      axios
-        .request(options)
-        .then(function (response) {
-          const tokensList = response.data.data.coins;
-          const tokenDefault = tokensList.find(
-            (token) => token.symbol === "HEX"
-          );
-          console.log(tokensList);
-          setTokens(tokensList);
-          setSelectedToken(tokenDefault);
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    };
-
-    fetchTokenData();
+    const tokenDefault = Data.find((token) => token.symbol === "WPLS");
+    setSelectedToken(tokenDefault);
   }, []);
 
   useEffect(() => {
@@ -63,7 +69,7 @@ function Home() {
     }
   }, [amount, selectedToken]);
 
-  const filteredTokens = tokens.filter(
+  const filteredTokens = Data.filter(
     (token) =>
       token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       token.symbol.toLowerCase().includes(searchTerm.toLowerCase())
@@ -133,7 +139,6 @@ function Home() {
                   </div>
                 </BackgroundDiv2>
 
-
                 <BackgroundDiv>
                   <div className="left">
                     <img src={Logo} alt="" />
@@ -201,7 +206,7 @@ function Home() {
                     </LimitsStyle>
                   )}
                 </BackgroundDiv2>
-                
+
                 <button onClick={() => setConnect(true)}>Connect Wallet</button>
                 <br />
                 <p className="estimate">
@@ -293,8 +298,6 @@ export const HomeStyle = styled.div`
     justify-content: center;
     align-items: center;
   }
-
-  
 `;
 
 const PageContent = styled.div`
